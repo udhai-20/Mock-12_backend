@@ -45,4 +45,30 @@ const login_user = async (req, res) => {
   }
 };
 
-module.exports = { register, login_user };
+const calculate = async (req, res) => {
+  console.log("req_check", req.body);
+  let { totalAmount: P, interestRate: i, years: n } = req.body;
+  i = i / 100;
+  const totalMaturity = Math.round(P * ((Math.pow(1 + i, n) - 1) / i));
+  const totalInvestment = P * n;
+  const interestGained = totalMaturity - totalInvestment;
+  return res.send({
+    totalMaturity: totalMaturity,
+    totalInvestment: totalInvestment,
+    interestGained: interestGained,
+  });
+};
+
+const profile = async (req, res) => {
+  const id = req.params.id;
+  const user_profile = await UserModel.findOne({ _id: id });
+  if (user_profile) {
+    res.status(201).send({
+      _id: user_profile._id,
+      name: user_profile.name,
+      email: user_profile.email,
+    });
+  }
+};
+
+module.exports = { register, login_user, calculate, profile };
